@@ -2,10 +2,16 @@ from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 from django.contrib.auth.models import User
+from django.conf import settings
+
+from django.core.validators import FileExtensionValidator
 
 
 class MyImageModel(models.Model):
-    image = models.ImageField(upload_to='images/')
+    image = models.ImageField(
+        upload_to='images/',
+        validators=[FileExtensionValidator(allowed_extensions=['png', 'jpg', 'jpeg'])]
+    )
     thumbnail_400 = ImageSpecField(
         source='image',
         processors=[ResizeToFit(400)],
@@ -17,6 +23,11 @@ class MyImageModel(models.Model):
         processors=[ResizeToFit(200)],
         format='JPEG',
         options={'quality': 90}
+    )
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
     )
 
 
