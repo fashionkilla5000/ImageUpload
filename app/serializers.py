@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import serializers
 from .models import MyImageModel
+from rest_framework import serializers
+from subscriptions.models import Subscription
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

@@ -11,9 +11,6 @@ from rest_framework import status
 from .models import MyImageModel
 from .serializers import MyImageModelSerializer
 
-from PIL import Image
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -49,4 +46,5 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
     queryset = MyImageModel.objects.all()
     serializer_class = MyImageModelSerializer
     parser_classes = (MultiPartParser, FormParser)
+
 

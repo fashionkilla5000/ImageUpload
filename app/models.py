@@ -12,6 +12,7 @@ class MyImageModel(models.Model):
         options={'quality': 90}
     )
     thumbnail_200 = ImageSpecField(
+        source='image',
         processors=[ResizeToFit(200)],
         format='JPEG',
         options={'quality': 90}

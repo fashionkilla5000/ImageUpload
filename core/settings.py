@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'app',
     'imagekit',
+    "django_fsm_log",
+    "subscriptions.apps.SubscriptionsConfig",
 ]
 
 MIDDLEWARE = [
