@@ -31,8 +31,18 @@ class MyImageModel(models.Model):
     )
 
 
+class ThumbnailSize(models.Model):
+    size = models.IntegerField(blank=True, default=200)
+
+    def __str__(self):
+        return str(self.size)+"px"
+
+
 class SubscriptionPlan(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
+    thumbnail_size = models.ManyToManyField(ThumbnailSize)
+    original_image = models.BooleanField(blank=True, default=False)
+    expiring_link = models.BooleanField(blank=True, default=False)
     description = models.TextField(blank=True)
 
     def __str__(self):
@@ -41,7 +51,8 @@ class SubscriptionPlan(models.Model):
 
 class UserSubscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions')
-    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE)
+    plan: SubscriptionPlan = models.ForeignKey(SubscriptionPlan, on_delete=models.CASCADE)
 
     def __str__(self):
         return "User: " + str(self.user) + ", Plan: " + str(self.plan)
+

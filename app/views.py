@@ -1,12 +1,11 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from app.serializers import UserSerializer, GroupSerializer
 
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .models import MyImageModel
-from .serializers import MyImageModelSerializer
+from .models import *
+from .serializers import *
 from django.contrib.auth.models import User
 
 
@@ -19,18 +18,28 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
+class ThumbnailSizeViewSet(viewsets.ModelViewSet):
+    queryset = ThumbnailSize.objects.all()
+    serializer_class = ThumbnailSizeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class SubscriptionPlanViewSet(viewsets.ModelViewSet):
+    queryset = SubscriptionPlan.objects.all()
+    serializer_class = SubscriptionPlanSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class UserSubscriptionViewSet(viewsets.ModelViewSet):
+    queryset = UserSubscription.objects.all()
+    serializer_class = UserSubscriptionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class MyImageModelViewSet(viewsets.ModelViewSet):
     serializer_class = MyImageModelSerializer
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.validated_data['created_by'] = self.request.user
