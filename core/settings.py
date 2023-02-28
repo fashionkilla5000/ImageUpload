@@ -39,10 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'app',
+    'easy_thumbnails',
     'imagekit',
     "django_fsm_log",
     "subscriptions.apps.SubscriptionsConfig",
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

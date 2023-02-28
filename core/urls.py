@@ -12,7 +12,6 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'images', views.MyImageModelViewSet, basename='myimages')
 router.register(r'subscription-plan', views.SubscriptionPlanViewSet)
-router.register(r'thumbnail-size', views.ThumbnailSizeViewSet)
 router.register(r'user-subscription', views.UserSubscriptionViewSet)
 
 

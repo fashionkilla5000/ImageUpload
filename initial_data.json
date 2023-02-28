@@ -1,24 +1,9 @@
 [
   {
-    "model": "app.ThumbnailSize",
-    "pk": 1,
-    "fields": {
-      "size": 200
-    }
-  },
-  {
-    "model": "app.ThumbnailSize",
-    "pk": 2,
-    "fields": {
-      "size": 400
-    }
-  },
-  {
     "model": "app.SubscriptionPlan",
     "pk": 1,
     "fields": {
         "name": "basic",
-        "thumbnail_size": [1],
         "original_image": false,
         "expiring_link": false,
         "description": "link to a thumbnail that's 200px in height"
@@ -29,7 +14,6 @@
     "pk": 2,
     "fields": {
         "name": "Premium",
-        "thumbnail_size": [1,2],
         "original_image": true,
         "expiring_link": false,
         "description": "a link to a thumbnail that's 200px in height \na link to a thumbnail that's 400px in height\na link to the originally uploaded image\n"
@@ -40,7 +24,6 @@
     "pk": 3,
     "fields": {
         "name": "Enterprise",
-        "thumbnail_size": [1,2],
         "original_image": true,
         "expiring_link": true,
         "description": "a link to a thumbnail that's 200px in height\na link to a thumbnail that's 400px in height\na link to the originally uploaded image\nability to fetch an expiring link to the image (the link expires after a given number of seconds (the user can specify any number between 300 and 30000))\n"

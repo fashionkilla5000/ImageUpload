@@ -8,6 +8,15 @@ from .models import *
 from .serializers import *
 from django.contrib.auth.models import User
 
+from django.conf import settings
+from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.cache import cache_control
+from django.views.decorators.http import etag
+from django.views.generic import DetailView
+
+from PIL import Image
+from io import BytesIO
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -15,12 +24,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class ThumbnailSizeViewSet(viewsets.ModelViewSet):
-    queryset = ThumbnailSize.objects.all()
-    serializer_class = ThumbnailSizeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -52,5 +55,7 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
         else:
             queryset = MyImageModel.objects.filter(created_by=user)
         return queryset
+
+
 
 
