@@ -51,8 +51,8 @@ class MyImageModel(models.Model):
 
     avatar_thumbnail = ImageSpecField(source='image',
                                       id='app:MyImageModel:avatar_thumbnail')
-    thumbnail_width = models.PositiveIntegerField()
-    thumbnail_height = models.PositiveIntegerField()
+    thumbnail_width = models.PositiveIntegerField(default=200)
+    thumbnail_height = models.PositiveIntegerField(default=200)
 
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

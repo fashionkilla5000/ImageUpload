@@ -42,6 +42,8 @@ class MyImageModelSerializer(serializers.ModelSerializer):
     image = serializers.ImageField()
     thumbnail_400 = serializers.ImageField(read_only=True)
     thumbnail_200 = serializers.ImageField(read_only=True)
+    thumbnail_width = serializers.IntegerField(read_only=True)
+    thumbnail_height = serializers.IntegerField(read_only=True)
     avatar_thumbnail = serializers.ImageField(read_only=True)
     created_by = serializers.SlugRelatedField(many=False, slug_field='id', read_only=True)
 
@@ -52,7 +54,6 @@ class MyImageModelSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         user = self.context['request'].user
         basic_plan = UserSubscription.objects.filter(plan__name='basic', user=user)
-
         if basic_plan:
             ret = super().to_representation(instance)
             ret.pop('image', None)

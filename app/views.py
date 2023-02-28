@@ -45,11 +45,20 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.validated_data['created_by'] = self.request.user
+
+        user = self.request.user
+
+        user_plan = UserSubscription.objects.get(user=user).plan
+        get_size = SubscriptionPlan.objects.get(name=user_plan)
+
+        serializer.validated_data['created_by'] = user
+        serializer.validated_data['thumbnail_width'] = get_size.custom_thumbnail_width
+        serializer.validated_data['thumbnail_height'] = get_size.custom_thumbnail_height
         serializer.save()
 
     def get_queryset(self):
         user = self.request.user
+
         if user.is_superuser:
             queryset = MyImageModel.objects.all()
         else:
