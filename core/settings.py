@@ -10,9 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from celery.schedules import crontab
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -39,12 +42,22 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'app',
-    'easy_thumbnails',
-    'imagekit',
-    "django_fsm_log",
-    "subscriptions.apps.SubscriptionsConfig",
+    # 'easy_thumbnails',
+    # 'imagekit',
+    # "django_fsm_log",
+    # "subscriptions.apps.SubscriptionsConfig",
+    'celery',
+    'gevent'
 ]
 
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BEAT_SCHEDULE = {
+    'daily-at-midnight': {
+        'task': 'app.tasks.expire_link',
+        'schedule': timedelta(seconds=1),
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -113,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Poland'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 

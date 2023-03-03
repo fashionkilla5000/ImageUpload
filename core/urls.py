@@ -21,4 +21,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
+    # path('signed-url/', views.get_signed_url, name='get_signed_url'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
