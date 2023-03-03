@@ -1,11 +1,5 @@
-from django.contrib.auth.models import User
 from .models import *
 from rest_framework import serializers
-from easy_thumbnails.files import get_thumbnailer
-
-from rest_framework.request import Request
-from rest_framework.validators import UniqueTogetherValidator
-from rest_framework.exceptions import ValidationError
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -35,25 +29,28 @@ class UserSubscriptionSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = UserSubscription
-        fields = ['url','id','user','plan']
+        fields = ['url', 'id', 'user', 'plan']
 
 
 class MyImageModelSerializer(serializers.ModelSerializer):
     image = serializers.ImageField()
     thumbnail_400 = serializers.ImageField(read_only=True)
     thumbnail_200 = serializers.ImageField(read_only=True)
-    thumbnail_width = serializers.IntegerField(read_only=True)
-    thumbnail_height = serializers.IntegerField(read_only=True)
     avatar_thumbnail = serializers.ImageField(read_only=True)
     created_by = serializers.SlugRelatedField(many=False, slug_field='id', read_only=True)
+    expiration_date = serializers.DateTimeField(read_only=True)
+    expiration_link = serializers.CharField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = MyImageModel
-        fields = ('id', 'created_by', 'image', 'thumbnail_400', 'thumbnail_200','thumbnail_width','thumbnail_height','avatar_thumbnail')
+        fields = ('id', 'created_by', 'image', 'thumbnail_400', 'thumbnail_200', 'avatar_thumbnail',
+                  'expiration_time', 'created_at','expiration_date','expiration_link')
 
     def to_representation(self, instance):
         user = self.context['request'].user
         basic_plan = UserSubscription.objects.filter(plan__name='basic', user=user)
+
         if basic_plan:
             ret = super().to_representation(instance)
             ret.pop('image', None)
@@ -61,7 +58,9 @@ class MyImageModelSerializer(serializers.ModelSerializer):
             return ret
         else:
             ret = super().to_representation(instance)
+
             return ret
+
 
 
 

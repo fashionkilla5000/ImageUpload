@@ -1,22 +1,12 @@
-from django.contrib.auth.models import User, Group
+from datetime import timedelta
+
+from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework import permissions
-
 from rest_framework.parsers import MultiPartParser, FormParser
-
-from .models import *
 from .serializers import *
 from django.contrib.auth.models import User
 
-from django.conf import settings
-from django.http import HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
-from django.shortcuts import get_object_or_404
-from django.views.decorators.cache import cache_control
-from django.views.decorators.http import etag
-from django.views.generic import DetailView
-
-from PIL import Image
-from io import BytesIO
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -45,7 +35,6 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-
         user = self.request.user
 
         user_plan = UserSubscription.objects.get(user=user).plan
@@ -54,6 +43,9 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
         serializer.validated_data['created_by'] = user
         serializer.validated_data['thumbnail_width'] = get_size.custom_thumbnail_width
         serializer.validated_data['thumbnail_height'] = get_size.custom_thumbnail_height
+        serializer.validated_data['expiration_date'] = timezone.now() + \
+                                                       timedelta(seconds=serializer.save().expiration_time)
+        serializer.validated_data['expiration_link'] = self.request.build_absolute_uri(serializer.save().image.url)
         serializer.save()
 
     def get_queryset(self):

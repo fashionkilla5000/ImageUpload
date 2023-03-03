@@ -2,7 +2,6 @@ from imagekit.processors import ResizeToFit
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.validators import FileExtensionValidator
-
 from django.db import models
 from imagekit import ImageSpec, register
 from imagekit.models import ImageSpecField
@@ -49,15 +48,21 @@ class MyImageModel(models.Model):
         validators=[FileExtensionValidator(allowed_extensions=['png', 'jpg', 'jpeg'])]
     )
 
-    avatar_thumbnail = ImageSpecField(source='image',
-                                      id='app:MyImageModel:avatar_thumbnail')
+    avatar_thumbnail = ImageSpecField(
+        source='image',
+        id='app:MyImageModel:avatar_thumbnail')
+
     thumbnail_width = models.PositiveIntegerField(default=200)
     thumbnail_height = models.PositiveIntegerField(default=200)
+    expiration_link = models.CharField(max_length=255, blank=True, null=True)
+    expiration_time = models.PositiveIntegerField(default=60, blank=False)
+    expiration_date = models.DateTimeField(blank=True, null=True)
 
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
     thumbnail_400 = ImageSpecField(
         source='image',
         processors=[ResizeToFit(400)],
@@ -70,6 +75,7 @@ class MyImageModel(models.Model):
         format='JPEG',
         options={'quality': 90}
     )
+
 
 
 
