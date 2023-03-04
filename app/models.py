@@ -1,6 +1,3 @@
-from datetime import timedelta
-
-from django.utils import timezone
 from imagekit.processors import ResizeToFit
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -78,18 +75,6 @@ class MyImageModel(models.Model):
         format='JPEG',
         options={'quality': 90}
     )
-
-    @property
-    def delete_cos(self):
-        print("cossoadoasdas")
-        time = timezone.now() + timedelta(seconds=10)
-        # query = MyImageModel.objects.get(pk=self.pk)
-
-        while True:
-            if time > timezone.now():
-                self.delete()
-                break
-
 
 
 

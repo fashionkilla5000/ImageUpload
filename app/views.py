@@ -1,28 +1,16 @@
 from datetime import timedelta
 
-from django.core.signing import Signer
-from django.http import HttpResponse
-
-from app.tasks import expire_link
-from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import *
 from django.contrib.auth.models import User
-from django.core import signing
 
-# def get_signed_url(request):
-#     print("sadasdasdasd")
-#
-#     url = 'http://127.0.0.1:8000/media/images/oczekuj%C4%85ce_dR5PTzd.png'  # Replace with your image URL
-#     expires = request.GET.get('expires', 300)  # Get the expiry time from the query string
-#     signed_url = signing.dumps(url, key=settings.SECRET_KEY, salt='image_url')
-#     response = HttpResponse(status=302)
-#     response['Location'] = signed_url
-#     response['Expires'] = expires
-#
-#     return response
+from django.core.signing import TimestampSigner
+
+
+from django.utils import timezone
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -53,6 +41,8 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
 
+        print(serializer.validated_data['expiration_time'])
+
         user_plan = UserSubscription.objects.get(user=user).plan
         get_size = SubscriptionPlan.objects.get(name=user_plan)
 
@@ -61,13 +51,11 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
         serializer.validated_data['thumbnail_height'] = get_size.custom_thumbnail_height
         serializer.validated_data['expiration_date'] = timezone.now() + \
                                                        timedelta(seconds=serializer.save().expiration_time)
-        serializer.validated_data['expiration_link'] = self.request.build_absolute_uri(serializer.save().image.url)
+        signer = TimestampSigner()
+        url = self.request.build_absolute_uri(serializer.save().image.url)
+        value = signer.sign(url)
+        serializer.validated_data['expiration_link'] = value
         serializer.save()
-        #
-        instance = serializer.save()
-        print(instance)
-        instance.delete_cos()
-
 
     def get_queryset(self):
         user = self.request.user
@@ -77,7 +65,6 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
         else:
             queryset = MyImageModel.objects.filter(created_by=user)
         return queryset
-
 
 
 

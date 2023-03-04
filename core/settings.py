@@ -42,22 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'app',
-    # 'easy_thumbnails',
-    # 'imagekit',
-    # "django_fsm_log",
-    # "subscriptions.apps.SubscriptionsConfig",
-    'celery',
-    'gevent'
 ]
-
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
-CELERY_BEAT_SCHEDULE = {
-    'daily-at-midnight': {
-        'task': 'app.tasks.expire_link',
-        'schedule': timedelta(seconds=1),
-    }
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
