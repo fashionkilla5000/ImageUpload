@@ -1,11 +1,15 @@
 from datetime import timedelta
 
-from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import *
 from django.contrib.auth.models import User
+
+from django.core.signing import TimestampSigner
+
+
+from django.utils import timezone
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -37,6 +41,8 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
 
+        print(serializer.validated_data['expiration_time'])
+
         user_plan = UserSubscription.objects.get(user=user).plan
         get_size = SubscriptionPlan.objects.get(name=user_plan)
 
@@ -45,7 +51,10 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
         serializer.validated_data['thumbnail_height'] = get_size.custom_thumbnail_height
         serializer.validated_data['expiration_date'] = timezone.now() + \
                                                        timedelta(seconds=serializer.save().expiration_time)
-        serializer.validated_data['expiration_link'] = self.request.build_absolute_uri(serializer.save().image.url)
+        signer = TimestampSigner()
+        url = self.request.build_absolute_uri(serializer.save().image.url)
+        value = signer.sign(url)
+        serializer.validated_data['expiration_link'] = value
         serializer.save()
 
     def get_queryset(self):
@@ -56,7 +65,6 @@ class MyImageModelViewSet(viewsets.ModelViewSet):
         else:
             queryset = MyImageModel.objects.filter(created_by=user)
         return queryset
-
 
 
 

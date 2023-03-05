@@ -3,7 +3,7 @@
     "model": "app.SubscriptionPlan",
     "pk": 1,
     "fields": {
-        "name": "basic",
+        "name": "Basic",
         "original_image": false,
         "expiring_link": false,
         "description": "link to a thumbnail that's 200px in height"

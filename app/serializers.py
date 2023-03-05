@@ -1,3 +1,5 @@
+from django.core.signing import TimestampSigner
+
 from .models import *
 from rest_framework import serializers
 
@@ -39,7 +41,8 @@ class MyImageModelSerializer(serializers.ModelSerializer):
     avatar_thumbnail = serializers.ImageField(read_only=True)
     created_by = serializers.SlugRelatedField(many=False, slug_field='id', read_only=True)
     expiration_date = serializers.DateTimeField(read_only=True)
-    expiration_link = serializers.CharField(read_only=True)
+    expiration_time = serializers.IntegerField()
+    expiration_link = serializers.SerializerMethodField()
     created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
@@ -47,19 +50,29 @@ class MyImageModelSerializer(serializers.ModelSerializer):
         fields = ('id', 'created_by', 'image', 'thumbnail_400', 'thumbnail_200', 'avatar_thumbnail',
                   'expiration_time', 'created_at','expiration_date','expiration_link')
 
+    def get_expiration_link(self, obj):
+        signer = TimestampSigner()
+        try:
+            return signer.unsign(obj.expiration_link, max_age=obj.expiration_time)
+        except:
+            obj.expiration_link = 'expired'
+            return obj.expiration_link
+
     def to_representation(self, instance):
+
         user = self.context['request'].user
-        basic_plan = UserSubscription.objects.filter(plan__name='basic', user=user)
 
-        if basic_plan:
-            ret = super().to_representation(instance)
+        plan = UserSubscription.objects.filter(user=user)[0].plan
+        subscription = SubscriptionPlan.objects.filter(name=plan)
+
+        ret = super().to_representation(instance)
+
+        if not subscription[0].original_image:
             ret.pop('image', None)
-            ret.pop('thumbnail_400', None)
-            return ret
-        else:
-            ret = super().to_representation(instance)
+        if not subscription[0].expiring_link:
+            ret.pop('expiration_link', None)
 
-            return ret
+        return ret
 
 
 
