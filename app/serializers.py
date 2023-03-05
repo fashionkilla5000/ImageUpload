@@ -61,17 +61,18 @@ class MyImageModelSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
 
         user = self.context['request'].user
-        basic_plan = UserSubscription.objects.filter(plan__name='basic', user=user)
 
-        if basic_plan:
-            ret = super().to_representation(instance)
+        plan = UserSubscription.objects.filter(user=user)[0].plan
+        subscription = SubscriptionPlan.objects.filter(name=plan)
+
+        ret = super().to_representation(instance)
+
+        if not subscription[0].original_image:
             ret.pop('image', None)
-            ret.pop('thumbnail_400', None)
-            return ret
-        else:
-            ret = super().to_representation(instance)
+        if not subscription[0].expiring_link:
+            ret.pop('expiration_link', None)
 
-            return ret
+        return ret
 
 
 
