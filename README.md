@@ -28,7 +28,7 @@ $ python manage.py runserver
 ```
 
 ## How it works?
-Firstly u need to register as admin, go to admin page, add users and give them Subscriptions in `UserSubscription`
+Firstly u need to register as admin, go to admin page, add users and give them Subscriptions in `UserSubscriptions`
 
 * In your terminal paste this line and follow the instructions
 ```
